@@ -1,22 +1,37 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
-// Create a new ratelimiter, that allows 10 requests per 10 seconds
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, "10 s"),
-  analytics: true,
-  /**
-   * Optional prefix for the keys used in redis. This is useful if you want to share a redis
-   * instance with other applications and want to avoid key collisions. The default prefix is
-   * "@upstash/ratelimit"
-   */
-  prefix: "@upstash/ratelimit",
-});
+let ratelimit: Ratelimit | null = null;
+
+if (
+  process.env.UPSTASH_REDIS_REST_URL &&
+  process.env.UPSTASH_REDIS_REST_TOKEN
+) {
+  const redis = Redis.fromEnv();
+
+  ratelimit = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, "10 s"),
+    analytics: true,
+    prefix: "@upstash/ratelimit",
+  });
+}
 
 export async function rateLimit(req: NextRequest) {
-  const ip = (req as any).ip ?? req.headers.get("x-real-ip") ?? req.headers.get("x-forwarded-for") ?? "127.0.0.1";
-  const { success, pending, limit, reset, remaining } = await ratelimit.limit(ip);
+  if (!ratelimit) {
+    // kalau redis tidak ada, skip ratelimit
+    return { success: true, limit: 0, remaining: 0, reset: 0 };
+  }
+
+  const ip =
+    (req as any).ip ??
+    req.headers.get("x-real-ip") ??
+    req.headers.get("x-forwarded-for") ??
+    "127.0.0.1";
+
+  const { success, pending, limit, reset, remaining } =
+    await ratelimit.limit(ip);
+
   return { success, pending, limit, reset, remaining };
 }
