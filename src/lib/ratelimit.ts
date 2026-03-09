@@ -20,7 +20,6 @@ if (
 
 export async function rateLimit(req: NextRequest) {
   if (!ratelimit) {
-    // kalau redis tidak ada, skip ratelimit
     return { success: true, limit: 0, remaining: 0, reset: 0 };
   }
 

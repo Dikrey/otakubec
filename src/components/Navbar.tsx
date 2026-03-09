@@ -19,7 +19,7 @@ export default function App() {
         <NavbarItem>
           <Button
             as={Link}
-            href="https://github.com/Hanz-Creator"
+            href="https://github.com/Dikrey"
             target="_blank"
             rel="noopener noreferrer"
             variant="bordered"

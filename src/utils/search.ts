@@ -14,8 +14,7 @@ export default async function search(keyword: string): Promise<searchResultAnime
 
   try {
     const url = `${BASEURL}/?s=${encodeURIComponent(keyword.trim())}&post_type=anime`;
-    console.log('🔍 Fetching URL:', url); // <-- Ini akan muncul di Vercel Logs
-
+    console.log('🔍 Fetching URL:', url);
     const response = await axios.get(url, {
       timeout: 10000,
       headers: {
@@ -26,7 +25,6 @@ export default async function search(keyword: string): Promise<searchResultAnime
     console.log('✅ Got response, status:', response.status);
     const html = response.data;
 
-    // Cek apakah HTML berisi error Cloudflare
     if (html.includes('cloudflare') || html.includes('Checking your browser')) {
       console.error('🚨 Blocked by Cloudflare or bot protection');
       return [];

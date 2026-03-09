@@ -50,3 +50,5 @@ const scrapeAnimeByGenre = (html: string) => {
 };
 
 export default scrapeAnimeByGenre;
+
+

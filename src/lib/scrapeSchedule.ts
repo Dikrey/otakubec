@@ -18,7 +18,7 @@ const scrapSchedule = (html: string): ScheduleByDay[] => {
       const anime_name = $(liElement).find('a').text().trim();
       const url = $(liElement).find('a').attr('href') ?? '';
       const slug = extractSlugFromUrl(url);
-      const natee_url = "https://otakudesu.natee.my.id/anime/" + slug;
+      const natee_url = "https://nekonime.dpdns.org/anime/" + slug;
 
       const animeItem = {
         anime_name,
